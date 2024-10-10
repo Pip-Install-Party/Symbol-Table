@@ -76,7 +76,7 @@ private:
     // State to process escape sequences in string literals.
     void state8(std::istringstream &inputStream, int &lineCount); 
 
-    // State to process escape characters (like '\n') after the backslash in strings.
+    // Fail state
     void state9(std::string var, std::string message, std::string message2);
 
     // State to process boolean AND ('&&') or bitwise AND ('&').
