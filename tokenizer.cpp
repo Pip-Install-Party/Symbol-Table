@@ -101,8 +101,7 @@ void Tokenizer::state0(std::istringstream &inputStream, int &lineCount) {
             tokenList.push_back(token);
         } else {
             // If an unrecognized token is encountered, output an error message and terminate.
-            std::cerr << "Unrecognized token: '" << ch << "' at line " << lineCount << " - Terminating...\n";
-            exit(1);
+            state9(std::to_string(ch),"Unrecognized token: ", "at line" + std::to_string(lineCount) + " - Terminating...\n");
         }
     }
 }
@@ -113,8 +112,7 @@ void Tokenizer::state1(std::istringstream &inputStream, int &lineCount, std::str
     inputStream.get(ch);
     
     if (inputStream.eof()) {  // Handle the end of the file.
-        std::cerr << "Error: Unterminated string\n";
-        exit(1);
+        state9(std::to_string(lineCount),"Error: Unterminated string on line ", "");
     } else if (ch == '"') {  // End of the string literal.
         Token token = Token("STRING", strLiteral, lineCount);
         tokenList.push_back(token);
@@ -124,8 +122,7 @@ void Tokenizer::state1(std::istringstream &inputStream, int &lineCount, std::str
         return;
     } else if (ch == '\n') {  // Handle newlines within the string (error).
         lineCount++;
-        std::cerr << "Error: Unterminated string on line " << lineCount << "\n";
-        exit(1);
+        state9(std::to_string(lineCount),"Error: Unterminated string on line ", "");
     } else {  // Add characters to the buffer as part of the string.
         strLiteral += ch;
     }
@@ -138,8 +135,7 @@ void Tokenizer::state2(std::istringstream &inputStream, int &lineCount) {
     inputStream.get(ch);  // Get the next character.
 
     if (inputStream.eof()) {  // End of file, return error for unterminated hyphen.
-        std::cerr << "Error: Unterminated hyphen\n";
-        exit(1);
+        state9("","Error: Unterminated hyphen\n", "");
     } else if (ch == '\n') {  // Handle newline, increment line count.
         lineCount++;
     } else if (isdigit(ch)) {  // Handle negative numbers.
@@ -183,8 +179,7 @@ void Tokenizer::state4(std::istringstream &inputStream, int &lineCount, std::str
         inputStream.get(ch);  // Get the next character.
 
         if (inputStream.eof()) {  // End of file, handle error for unterminated identifier.
-            std::cerr << "Error: Unterminated identifier\n";
-            exit(1);
+            state9("","Error: Unterminated identifier\n", "");
         } else if (!isalnum(ch) && ch != '_') {  // If it's not a valid identifier character, stop.
             inputStream.putback(ch);  // Put the character back.
             break;
@@ -200,8 +195,7 @@ void Tokenizer::state5(std::istringstream &inputStream, int &lineCount) {
     inputStream.get(ch);  // Get the next character.
 
     if (inputStream.eof()) {  // End of file, error for unterminated character literal.
-        std::cerr << "Error: Unterminated character literal on line" << lineCount;
-        exit(1);
+        state9(std::to_string(lineCount),"Error: Unterminated character literal on line", "");
     } else if (ch == '\'') {  // Empty character literal, handle it.
         Token token("SINGLE_QUOTE", std::string(1, ch), lineCount);
         tokenList.push_back(token);
@@ -252,6 +246,7 @@ void Tokenizer::state7(std::istringstream &inputStream, int &lineCount) {
 
 // Handle escape sequences inside string literals (e.g., '\n', '\t') and character literals 
 void Tokenizer::state8(std::istringstream &inputStream, int &lineCount) {
+
     char ch;
     inputStream.get(ch);  // Get the character after the backslash.
 
@@ -261,23 +256,16 @@ void Tokenizer::state8(std::istringstream &inputStream, int &lineCount) {
         Token token("CHARACTER", std::string(1, ch), lineCount);
         tokenList.push_back(token);
     } else {  // Handle invalid escape sequences.
-        std::cerr << "Error: Invalid escape sequence '\\" << ch << "\n";
-        exit(1);
+        state9(std::to_string(ch), "Error: Invalid escape sequence '\\", "");
     }
     return; 
 }
 
-// Handle character escape sequences (like '\n').
-/*void Tokenizer::state9(std::istringstream &inputStream, int &lineCount, std::ostringstream& buffer) {
-    char ch;
-    inputStream.get(ch);  // Get the character after the backslash.
-
-    if (ch == 'n') {  // Handle newline escape '\n'.
-        buffer << "n";
-    } else {
-        buffer << ch;  // Handle other escape characters.
-    }
-}*/
+// Dead State
+void Tokenizer::state9(std::string var, std::string message, std::string message2) {
+    std::cerr << message << var << message2;
+    exit(1);
+}
 
 // Handle boolean AND (&&) and bitwise AND (&).
 void Tokenizer::state10(std::istringstream &inputStream, int &lineCount) {
@@ -304,8 +292,7 @@ void Tokenizer::state11(std::istringstream &inputStream, int &lineCount) {
         tokenList.push_back(token);
         return;
     } else {  // Handle invalid character literals.
-        std::cerr << "Error: Invalid character literal on line " << lineCount;
-        exit(1);
+        state9(std::to_string(lineCount), "Error: Invalid character literal on line ", "");
     }
 }
 
@@ -348,10 +335,8 @@ void Tokenizer::state14(std::istringstream &inputStream, int &lineCount) {
 
     // Ensure that the number is followed by a valid token terminator (space, semicolon, closing parenthesis, or bracket).
     if (ch != ' ' && ch != ';' && ch != ')' && ch != ']') {
-        std::cerr << "Syntax error on line " <<  lineCount << ": invalid integer\n";
-        exit(1);  // Terminate on invalid character after integer.
+        state9(std::to_string(lineCount),"Syntax error on line ", ": invalid integer\n");
     }
     // If it's a valid token terminator, put the character back into the stream for further processing.
     inputStream.putback(ch);
 }
-

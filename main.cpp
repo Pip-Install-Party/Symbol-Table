@@ -100,7 +100,7 @@ int main() {
 
         for (int i = 0; i < tokenList.size(); i++){
             std::cout << "Token type: " << tokenList[i].tokenType << '\n';
-            std::cout << "Token: " << tokenList[i].token << "   Line Number: " << tokenList[i].lineNumber << '\n';
+            std::cout << "Token: " << tokenList[i].token << "\nLine Number: " << tokenList[i].lineNumber << '\n';
             std::cout << "\n";
         }
     }
