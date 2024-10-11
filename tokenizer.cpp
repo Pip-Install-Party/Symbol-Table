@@ -140,7 +140,6 @@ void Tokenizer::state2(std::istringstream &inputStream, int &lineCount) {
         lineCount++;
     } else if (isdigit(ch)) {  // Handle negative numbers.
         std::string negativeInt = "-" + std::string(1,ch);
-        std::cout << "moving to state 3 from state 2, negativeInt is: " << negativeInt << "\n";
         state3(inputStream, lineCount, negativeInt);  // Transition to state3 for further number processing.
         return;
     } else {
