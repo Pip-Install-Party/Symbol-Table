@@ -111,7 +111,6 @@ int main() {
         std::cout << "No matching assignments exist for " << assignment_num << ".\n";
         return 1;
     }
-    
 
     return 0;  // Exit successfully
 }

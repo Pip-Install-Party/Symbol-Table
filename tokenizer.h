@@ -8,32 +8,7 @@
 #include <filesystem>
 #include <vector>
 
-// The Token class defines the attributes of a Token, including its type, contents, and line number.
-class Token 
-{
-public:
-    std::string tokenType = "";
-    std::string token = "";
-    int lineNumber = 0;
-
-    Token(const std::string& tokenType, const std::string& token, int lineNumber)
-        : tokenType(tokenType), token(token), lineNumber(lineNumber) {}
-
-    // Get the type of the token.
-    std::string getType() const {
-        return tokenType;
-    }
-
-    // Get the value of the token.
-    std::string getValue() const {
-        return token;
-    }
-
-    // Get the line number where the token was found
-    int getLineNumber() const {
-        return lineNumber;
-    }
-};
+#include "token.h"
 
 // The Tokenizer class is responsible for breaking down a stream of input into various tokens,
 // using multiple states to process different types of input, such as numbers, operators, and identifiers.
