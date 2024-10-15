@@ -6,6 +6,7 @@
 
 #include "commentDFA.h"
 #include "tokenizer.h"
+#include "parser.h"
 
 // Vectors holding the file paths for test files
 const std::filesystem::path a1Tests[] = {
@@ -26,6 +27,19 @@ const std::filesystem::path a2Tests[] = {
    "Tests/Program2/programming_assignment_2-test_file_6.c"
 };
 
+const std::filesystem::path a3Tests[] = {
+    "Tests/Program3/programming_assignment_3-test_file_1.c",
+    "Tests/Program3/programming_assignment_3-test_file_2.c",
+    "Tests/Program3/programming_assignment_3-test_file_3.c",
+    "Tests/Program3/programming_assignment_3-test_file_4.c",
+    "Tests/Program3/programming_assignment_3-test_file_5.c",
+    "Tests/Program3/programming_assignment_3-test_file_6.c", 
+    "Tests/Program3/programming_assignment_3-test_file_7.c",
+    "Tests/Program3/programming_assignment_3-test_file_8.c",
+    "Tests/Program3/programming_assignment_3-test_file_9.c",
+    "Tests/Program3/programming_assignment_3-test_file_10.c"
+};
+
 
 
 
@@ -41,6 +55,7 @@ int main() {
     std::cout << "Which programming assignment would you like to test?\n\n"
          "(1) Programming Assignment 1: Ignore Comments\n"
          "(2) Programming Assignment 2: Tokenization\n"
+         "(3) Programming Assignment 3: Recursive Descent Parser\n"
          "Selection: ";
     std::cin >> assignment_num;
 
@@ -52,6 +67,10 @@ int main() {
         }
     } else if (assignment_num == 2) {
          for (int i = 0; i < std::size(a2Tests); i++) {
+            std::cout << "(" << i+1 << ")" << a2Tests[i] << std::endl;
+        }
+    } else if (assignment_num == 3) {
+         for (int i = 0; i < std::size(a3Tests); i++) {
             std::cout << "(" << i+1 << ")" << a2Tests[i] << std::endl;
         }
     }
@@ -72,7 +91,13 @@ int main() {
             std::cerr << "Error: Could not open the file " << a2Tests[filenum] << std::endl;
             exit(1);
          }
-    }  else {
+    }   else if (assignment_num == 3) {
+        file.open(a3Tests[filenum]);
+        if (!file.is_open()) {  // Check if the file was opened successfully
+            std::cerr << "Error: Could not open the file " << a3Tests[filenum] << std::endl;
+            exit(1);
+         }
+    } else {
         std::cerr << "Inavlid file selection... Exiting...";
         exit(1);
     }
@@ -99,13 +124,25 @@ int main() {
         std::cout << "Token List\n";
 
         for (int i = 0; i < tokenList.size(); i++){
-            std::cout << "Token type: " << tokenList[i].tokenType << '\n';
-            std::cout << "Token: " << tokenList[i].token << "\nLine Number: " << tokenList[i].lineNumber << '\n';
+            std::cout << "Token type: " << tokenList[i].getType() << '\n';
+            std::cout << "Token: " << tokenList[i].getValue() << "\nLine Number: " << tokenList[i].getLineNumber() << '\n';
             std::cout << "\n";
         }
     }
     else if(assignment_num == 3) {
-        std::cout << "Assignment 3, not implemented yet\n";
+         std::string str = buffer.str();
+        str.erase(str.find_last_not_of(" \n\r\t")+1);  // Remove trailing whitespace or newlines
+        std::istringstream inputStream(str);
+        
+        Tokenizer *tokenizer = new Tokenizer();
+
+        tokenizer->begin(inputStream);
+
+        std::vector<Token> tokenList = tokenizer->getTokens();
+
+        Parser *parser = new Parser(tokenList);
+        parser->begin();
+        parser->printTree();
     }
     else {
         std::cout << "No matching assignments exist for " << assignment_num << ".\n";
