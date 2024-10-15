@@ -1,78 +1,68 @@
 #include "parser.h"
-
-Parser::Parser(const std::vector<Token>& tokenList)
+std::string tokenType;
+Parser::Parser(std::vector<Token>& tokenList)
 {
+    head = &tokenList.at(0);
     for(int i = 0; i < tokenList.size(); i++){
         tokenQueue.push(tokenList.at(i));
     }
 }
 
-void Parser::begin(){
-  state0();
+void Parser::state0(){
+      Token token = tokenQueue.front();
+      tokenQueue.pop();
+      tokenType = token.getType();
+      state1(token);
+
 }
 
-void Parser::state0(){
-      while (!tokenQueue.empty()) {
+void Parser::state1(Token lastToken){
+    while (!tokenQueue.empty()) {
 
         Token token = tokenQueue.front();
         tokenQueue.pop();
         tokenType = token.getType();
 
-        if (tokenType == IDENTIFIER) {
-            state1(token);
-        } else if (tokenType == INTEGER) {
-
-        } else if (tokenType == DOUBLE_QUOTE) {
-
-        } else if (tokenType == SINGLE_QUOTE) {
-
-        } else if (tokenType == COMMA) {
-
-        } else if (tokenType == SEMICOLON) {
-
-        } else if (tokenType == ASSIGNMENT_OPERATOR) {
-
-        } else if (tokenType == L_BRACE) {
-
-        } else if (tokenType == R_BRACE) {
-
-        } else if (tokenType == L_BRACKET) {
-
-        } else if (tokenType == R_BRACKET) {
-
-        } else if (tokenType == STRING) {
-
-        } else if (tokenType == PLUS) {
-
-        } else if (tokenType == MINUS) {
-
-        } else if (tokenType == LT_EQUAL) {
-
-        } else if (tokenType == GT_EQUAL) {
-
-        } else if (tokenType == GT) {
-
-        } else if (tokenType == LT) {
-
-        } else if (tokenType == BOOLEAN_EQUAL) {
-
-        } else if (tokenType == BOOLEAN_AND) {
-
-        } else if (tokenType == ASTERISK) {
-
-        } else if (tokenType == CHARACTER) {
-
+        if (tokenType == SEMICOLON) {
+        lastToken.setSibling(&token);
+            state2(token);
+        } else if (tokenType == L_BRACE || tokenType == R_BRACE){
+        lastToken.setChild(&token);
+            state2(token);
         }
+        lastToken.setSibling(&token);
+        state1(token);
     }
     return;
 }
 
-void Parser::state1(Token lastToken){
-    Token token = tokenQueue.front();
-    tokenQueue.pop();
-    tokenType = token.getType();
+void Parser::state2(Token lastToken){
+ Token token = tokenQueue.front();
+  tokenQueue.pop();
+  lastToken.setChild(&token);
+  state1(token);
+}
 
-    if (tokenType == IDENTIFIER) {
-        lastToken.getSibling() = token;       
-    } 
+void Parser::printTree(){
+  Token *temp = head;
+  int rowCount = 0;
+  while (temp != nullptr) {
+    std::cout << temp->getValue();
+    if ( temp->getSibling() != nullptr) {
+      std::cout << "--------->";
+      rowCount += 10;
+      temp = temp->getSibling();
+    } else if ( temp->getChild() != nullptr) {
+      for (int i = 0; i < 10; i++){
+        for (int i = 0; i < rowCount; i++){
+          std::cout << " ";
+        }
+        std::cout << "|";
+      }
+      std::cout << "⌄";
+      temp = temp->getChild();
+    } else {
+      return;
+    }
+  }
 }

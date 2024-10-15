@@ -27,6 +27,8 @@ public:
         return lineNumber;
     }
 
-    Token getSibling(){ return *rSibling; }
-    Token getChild(){ return *lChild; }
+    void setSibling(Token *newSibling) { rSibling = newSibling; }
+    Token* getSibling(){ return rSibling; }
+    void setChild(Token *newChild) { lChild = newChild; }
+    Token* getChild(){ return lChild; }
 };

@@ -34,7 +34,7 @@ namespace TokenTypes {
 using namespace TokenTypes;
 
 // Usage example
-std::string tokenType = TokenTypes::IDENTIFIER; // or TokenTypes::INTEGER
+extern std::string tokenType; //= TokenTypes::IDENTIFIER; // or TokenTypes::INTEGER
 
 // The Parser class is responsible for utilizing a vector of tokens created with the tokenizer
 // and converting it into a concrete syntax tree using a recursive descent parsing technique.
@@ -42,6 +42,7 @@ std::string tokenType = TokenTypes::IDENTIFIER; // or TokenTypes::INTEGER
 class Parser 
 {
 private:
+    Token *head;
     // Vector holding all of the tokens in order from the tokenizer.
     std::vector<Token> tokenList;
 
@@ -52,14 +53,16 @@ private:
 
     void state0();
     void state1(Token lastToken);
+    void state2(Token lastToken);
     
 
 public:
     // Parser construtor that is passed a vector of tokens from tokenizer.
-    Parser(const std::vector<Token>& tokenList);
+    Parser(std::vector<Token>& tokenList);
 
     // Begin the parsing process.
     void begin(){ state0(); };
+    void printTree();
 };
 
 #endif // PARSER_H
