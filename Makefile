@@ -1,4 +1,4 @@
-tokenize.x: main.o commentDFA.o tokenizer.o parser.o
+parse.x: main.o commentDFA.o tokenizer.o parser.o
 	g++ -std=c++17 -g main.o commentDFA.o tokenizer.o parser.o -o tokenize.x
 
 main.o: main.cpp commentDFA.h tokenizer.h parser.h

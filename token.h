@@ -2,8 +2,8 @@
 class Token 
 {
 private: 
-    Token *lChild;
-    Token *rSibling;
+    Token *lChild = nullptr;
+    Token *rSibling = nullptr;
     std::string tokenType = "";
     std::string token = "";
     int lineNumber = 0;
@@ -23,12 +23,13 @@ public:
     }
 
     // Get the line number where the token was found
-    int getLineNumber() const {
-        return lineNumber;
-    }
+    int getLineNumber() const { return lineNumber;}
 
     void setSibling(Token *newSibling) { rSibling = newSibling; }
+
     Token* getSibling(){ return rSibling; }
+
     void setChild(Token *newChild) { lChild = newChild; }
+
     Token* getChild(){ return lChild; }
 };

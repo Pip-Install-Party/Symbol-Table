@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include "tokenizer.h"
+#include <queue>
 
 namespace TokenTypes {
     constexpr const char* IDENTIFIER            = "IDENTIFIER";
@@ -49,11 +50,11 @@ private:
     // Variable to track the current position in the token list.
     int index;
 
-    std::queue<Token> tokenQueue;
+    std::queue<Token*> tokenQueue;
 
     void state0();
-    void state1(Token lastToken);
-    void state2(Token lastToken);
+    void state1(Token *lastToken);
+    void state2(Token *lastToken);
     
 
 public:

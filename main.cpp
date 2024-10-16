@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 #include <filesystem>
-#include <sstream> 
+#include <sstream>
 
 #include "commentDFA.h"
 #include "tokenizer.h"
@@ -33,7 +33,7 @@ const std::filesystem::path a3Tests[] = {
     "Tests/Program3/programming_assignment_3-test_file_3.c",
     "Tests/Program3/programming_assignment_3-test_file_4.c",
     "Tests/Program3/programming_assignment_3-test_file_5.c",
-    "Tests/Program3/programming_assignment_3-test_file_6.c", 
+    "Tests/Program3/programming_assignment_3-test_file_6.c",
     "Tests/Program3/programming_assignment_3-test_file_7.c",
     "Tests/Program3/programming_assignment_3-test_file_8.c",
     "Tests/Program3/programming_assignment_3-test_file_9.c",
@@ -59,7 +59,7 @@ int main() {
          "Selection: ";
     std::cin >> assignment_num;
 
-    std::cout << "Which file would you like to remove comments from?\n\n";
+    std::cout << "Which file would you like to run the program on?\n\n";
 
     if (assignment_num == 1) {
         for (int i = 0; i < std::size(a1Tests); i++) {
@@ -71,12 +71,12 @@ int main() {
         }
     } else if (assignment_num == 3) {
          for (int i = 0; i < std::size(a3Tests); i++) {
-            std::cout << "(" << i+1 << ")" << a2Tests[i] << std::endl;
+            std::cout << "(" << i+1 << ")" << a3Tests[i] << std::endl;
         }
     }
     std::cout << "Selection: ";
     std::cin >> filenum;
-            
+
     filenum -= 1;
 
     if (assignment_num == 1) {
@@ -114,7 +114,7 @@ int main() {
         std::string str = buffer.str();
         str.erase(str.find_last_not_of(" \n\r\t")+1);  // Remove trailing whitespace or newlines
         std::istringstream inputStream(str);
-        
+
         Tokenizer *tokenizer = new Tokenizer();
 
         tokenizer->begin(inputStream);
@@ -133,7 +133,7 @@ int main() {
          std::string str = buffer.str();
         str.erase(str.find_last_not_of(" \n\r\t")+1);  // Remove trailing whitespace or newlines
         std::istringstream inputStream(str);
-        
+
         Tokenizer *tokenizer = new Tokenizer();
 
         tokenizer->begin(inputStream);
