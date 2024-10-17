@@ -19,6 +19,8 @@ namespace TokenTypes {
     constexpr const char* R_BRACE               = "R_BRACE";
     constexpr const char* L_BRACKET             = "L_BRACKET";
     constexpr const char* R_BRACKET             = "R_BRACKET";
+    constexpr const char* L_PAREN               = "L_PAREN";
+    constexpr const char* R_PAREN               = "R_PAREN";
     constexpr const char* STRING                = "STRING";
     constexpr const char* PLUS                  = "PLUS";
     constexpr const char* MINUS                 = "MINUS";
@@ -49,6 +51,9 @@ private:
 
     // Variable to track the current position in the token list.
     int index;
+
+    // Counter for ignoring stuff
+    int ignore = 0;
 
     std::queue<Token*> tokenQueue;
 

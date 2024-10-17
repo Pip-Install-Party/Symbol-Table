@@ -1,6 +1,7 @@
 #include <iostream>
 #include "parser.h"
-std::string tokenType;
+using namespace TokenTypes;
+std::string currTokenType;
 
 // Constructor that takes in our tokenList that our tokenizer created and builds a queue with it
 Parser::Parser(std::vector<Token>& tokenList)
@@ -16,29 +17,36 @@ Parser::Parser(std::vector<Token>& tokenList)
 void Parser::state0(){
       Token *token = tokenQueue.front();
       tokenQueue.pop();
-      tokenType = token->getType();
+      currTokenType = token->getType();
       state1(token);
 }
 
 // Main loop state that doesn't stop until the queue is empty
 // Basically our "outer while loop" for the states
-void Parser::state1(Token* lastToken){
+void Parser::state1(Token* lastToken) {
     while (!tokenQueue.empty()) {
 
         Token *token = tokenQueue.front();
         tokenQueue.pop();
-        tokenType = token->getType();
+        currTokenType = token->getType();
 
-        // Checks if we need to set a sibling or child
-        if (tokenType == SEMICOLON) {
-        lastToken->setSibling(token);
-            state2(token);
-        } else if (tokenType == L_BRACE || tokenType == R_BRACE){
-        lastToken->setChild(token);
+        // Checks if we have a semicolon or braces
+        if (currTokenType == SEMICOLON) {
+            // Checks if we need to ignore semicolons at all
+            if (this->ignore > 0) {
+                lastToken->setSibling(token);
+                ignore--;
+                state1(token);
+            }
+            // Otherwise go to state 2
+            else {
+                lastToken->setSibling(token);
+                state2(token);
+            }
+        } else if (currTokenType == L_BRACE || lastToken->getType() == R_BRACE ) {
+            lastToken->setChild(token);
             state2(token);
         }
-        // Ask Blake about these calls, not sure why we need them
-        // I think it's messing with brackets being children
         else {
             lastToken->setSibling(token);
             state1(token);
@@ -47,10 +55,22 @@ void Parser::state1(Token* lastToken){
 }
 
 void Parser::state2(Token* lastToken){
+    // Base case for if the queue is empty
+    if (tokenQueue.empty()) return;
+
+    // Storing the first token in the queue
  Token *token = tokenQueue.front();
-  tokenQueue.pop();
+
+  tokenQueue.pop(); // Popping it off
+    // Setting lastToken's child to be token
   lastToken->setChild(token);
-  state1(token);
+
+    // Check for "for" loops
+    if (token->getValue() == "for") {
+        // Figure out a way to ignore the next two semicolons
+        this->ignore += 2;
+        }
+  state1(token); // Go back to state 1
 }
 
 void Parser::printTree(std::ofstream &rdpOutput){
