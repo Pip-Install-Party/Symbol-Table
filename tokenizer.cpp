@@ -217,14 +217,13 @@ void Tokenizer::state6(std::istringstream &inputStream, int &lineCount) {
     inputStream.get(ch);  // Get the next character.
 
     if (ch == '=') {  // Handle '>=' (greater than or equal to).
-        Token token("GT_EQUAL", std::string(1, ch), lineCount);
+        Token token("GT_EQUAL", std::string(">="), lineCount);
         tokenList.push_back(token);
     } else {  // Handle '>' (greater than).
         inputStream.putback(ch);  // Put character back if not '='.
         Token token("GT", ">", lineCount);
         tokenList.push_back(token);
     }
-    return;
 }
 
 // Process less-than operator and less-than-or-equal-to operator.
@@ -233,14 +232,13 @@ void Tokenizer::state7(std::istringstream &inputStream, int &lineCount) {
     inputStream.get(ch);  // Get the next character.
 
     if (ch == '=') {  // Handle '<=' (less than or equal to).
-        Token token("LT_EQUAL", std::string(1, ch), lineCount);
+        Token token("LT_EQUAL", std::string("<="), lineCount);
         tokenList.push_back(token);
     } else {  // Handle '<' (less than).
         inputStream.putback(ch);  // Put character back if not '='.
         Token token("LT", "<", lineCount);
         tokenList.push_back(token);
     }
-    return;
 }
 
 // Handle escape sequences inside string literals (e.g., '\n', '\t') and character literals 
@@ -272,7 +270,7 @@ void Tokenizer::state10(std::istringstream &inputStream, int &lineCount) {
     inputStream.get(ch);  // Get the next character.
 
     if (ch == '&') {  // Handle boolean AND (&&).
-        Token token("BOOLEAN_AND", std::string(1, ch), lineCount);
+        Token token("BOOLEAN_AND", std::string("&&"), lineCount);
         tokenList.push_back(token);
     } else {  // Handle bitwise AND (&).
         inputStream.putback(ch);  // Put character back if not another '&'.

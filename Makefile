@@ -14,4 +14,4 @@ parser.o: parser.cpp parser.h
 	g++ -std=c++17 -g parser.cpp -o parser.o -c
 
 clean:
-	rm -f parse.x *.o
+	rm -f parse.x *.o *.txt

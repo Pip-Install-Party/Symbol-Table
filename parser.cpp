@@ -43,12 +43,17 @@ void Parser::state1(Token* lastToken) {
                 lastToken->setSibling(token);
                 state2(token);
             }
-        } else if (currTokenType == L_BRACE || lastToken->getType() == R_BRACE ) {
+        } else if (currTokenType == L_BRACE ) {
             lastToken->setChild(token);
             state2(token);
         }
         else {
-            lastToken->setSibling(token);
+            if (lastToken->getType() == R_BRACE) {
+                lastToken->setChild(token);
+            }
+            else {
+                lastToken->setSibling(token);
+            }
             state1(token);
         }
     }
