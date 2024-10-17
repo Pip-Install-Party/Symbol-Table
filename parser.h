@@ -30,6 +30,7 @@ namespace TokenTypes {
     constexpr const char* LT                    = "LT";
     constexpr const char* BOOLEAN_EQUAL         = "BOOLEAN_EQUAL";
     constexpr const char* BOOLEAN_AND           = "BOOLEAN_AND";
+    constexpr const char* BOOLEAN_NOT           = "BOOLEAN_NOT";
     constexpr const char* ASTERISK              = "ASTERISK";
     constexpr const char* CHARACTER             = "CHARACTER";
 }

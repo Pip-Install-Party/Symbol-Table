@@ -49,16 +49,13 @@ private:
     void state7(std::istringstream &inputStream, int &lineCount);  
     
     // State to process escape sequences in string literals.
-    void state8(std::istringstream &inputStream, int &lineCount); 
+    void state8(std::istringstream &inputStream, int &lineCount, std::string &strLiteral); 
 
     // Fail state
     void state9(std::string var, std::string message, std::string message2);
 
     // State to process boolean AND ('&&') or bitwise AND ('&').
     void state10(std::istringstream &inputStream, int &lineCount);
-
-    // State to check for the closing single quote in character literals.
-    void state11(std::istringstream &inputStream, int &lineCount);
 
     // State to process a continuous sequence of digits (integer values).
     void state12(std::istringstream &inputStream, int &lineCount, std::string &intLiteral);

@@ -75,6 +75,9 @@ void Tokenizer::state0(std::istringstream &inputStream, int &lineCount) {
         } else if (ch == '\\') {  // Handle backslash character.
             Token token("BACKSLASH", std::string(1, ch), lineCount);
             tokenList.push_back(token);
+        } else if (ch == '!') {  // Handle boolean not.
+            Token token("BOOLEAN_NOT", std::string(1, ch), lineCount);
+            tokenList.push_back(token);
         } else if (ch == '&') {  // Handle boolean AND or bitwise AND.
             state10(inputStream, lineCount);
         } else if (ch == '"') {  // Handle double quotes (beginning of a string literal).
@@ -101,7 +104,7 @@ void Tokenizer::state0(std::istringstream &inputStream, int &lineCount) {
             tokenList.push_back(token);
         } else {
             // If an unrecognized token is encountered, output an error message and terminate.
-            state9(std::to_string(ch),"Unrecognized token: ", "at line" + std::to_string(lineCount) + " - Terminating...\n");
+            state9(std::string(1,ch),"Unrecognized token: ", " at line " + std::to_string(lineCount) + " - Terminating...\n");
         }
     }
 }
@@ -112,7 +115,7 @@ void Tokenizer::state1(std::istringstream &inputStream, int &lineCount, std::str
     inputStream.get(ch);
     
     if (inputStream.eof()) {  // Handle the end of the file.
-        state9(std::to_string(lineCount),"Error: Unterminated string on line ", "");
+        state9(std::to_string(lineCount),"Error: Unterminated string quote on line ", "");
     } else if (ch == '"') {  // End of the string literal.
         Token token = Token("STRING", strLiteral, lineCount);
         tokenList.push_back(token);
@@ -120,13 +123,12 @@ void Tokenizer::state1(std::istringstream &inputStream, int &lineCount, std::str
         Token closingToken("DOUBLE_QUOTE", std::string(1, ch), lineCount);
         tokenList.push_back(closingToken);
         return;
-    } else if (ch == '\n') {  // Handle newlines within the string (error).
-        lineCount++;
-        state9(std::to_string(lineCount),"Error: Unterminated string on line ", "");
+    } else if (ch == '\\') {  // Handle escape sequences
+        state8(inputStream, lineCount, strLiteral);  // State 8 called for escape sequences
     } else {  // Add characters to the buffer as part of the string.
         strLiteral += ch;
     }
-    state1(inputStream, lineCount, strLiteral);  // Continue processing the string.
+    state1(inputStream, lineCount, strLiteral);
 }
 
 // Check if - is part of a number or just a minus sign.
@@ -192,23 +194,41 @@ void Tokenizer::state4(std::istringstream &inputStream, int &lineCount, std::str
 void Tokenizer::state5(std::istringstream &inputStream, int &lineCount) {
     char ch;
     inputStream.get(ch);  // Get the next character.
+    std::string strLiteral;
 
     if (inputStream.eof()) {  // End of file, error for unterminated character literal.
         state9(std::to_string(lineCount),"Error: Unterminated character literal on line", "");
-    } else if (ch == '\'') {  // Empty character literal, handle it.
-        Token token("SINGLE_QUOTE", std::string(1, ch), lineCount);
+    } 
+    
+    if (ch == '\'') {  // Empty character literal case (just two single quotes).
+        Token token("SINGLE_QUOTE", std::string(1, '\''), lineCount);
         tokenList.push_back(token);
-        return;
-    } else if (ch == '\\') {  // Escape character inside the literal.
-        inputStream.get(ch); // Found backslash so need to get escaped character as well
-        Token token("CHARACTER", std::string(1, ch), lineCount);
-        tokenList.push_back(token);
-    } else {  // Handle regular single length character literals.
-        Token token("CHARACTER", std::string(1, ch), lineCount);
-        tokenList.push_back(token);
-
+        return;  // Empty character literal ''
     }
-    state11(inputStream, lineCount);  // Check for the closing single quote.
+
+    while (true) {
+        if (ch == '\\') {  
+            state8(inputStream, lineCount, strLiteral);  // Process escape sequences (same call to state8 as state1)
+        } else if (ch == '\'') {  // Closing single quote check
+            break;  
+        } else {
+            strLiteral += ch;  // Adds characters
+        }
+
+        if (!inputStream.get(ch)) {  // If EOF is reached.
+            state9(std::to_string(lineCount), "Error: Unterminated character literal on line", "");
+            return;
+        }
+    }
+
+    // Checking strLiteral
+    if (strLiteral.empty()) {
+        state9(std::to_string(lineCount), "Error: Empty character literal on line", ""); 
+    } else {
+        // Add the accumulated string as a CHARACTER token, may need to be renamed in the future.
+        Token token("CHARACTER", strLiteral, lineCount);
+        tokenList.push_back(token);
+    }
 }
 
 // Process greater-than operator and greater-than-or-equal-to operator.
@@ -242,20 +262,61 @@ void Tokenizer::state7(std::istringstream &inputStream, int &lineCount) {
 }
 
 // Handle escape sequences inside string literals (e.g., '\n', '\t') and character literals 
-void Tokenizer::state8(std::istringstream &inputStream, int &lineCount) {
+void Tokenizer::state8(std::istringstream &inputStream, int &lineCount, std::string &strLiteral) {
 
-    char ch;
-    inputStream.get(ch);  // Get the character after the backslash.
+    char escapeChar;
+    inputStream.get(escapeChar);  // Character after backslash
 
-    // Handle valid escape characters like '\n', '\t', etc.
-    if (ch == 'n' || ch == 't' || ch == '\\'  || ch == '0' || ch == '\'' || ch == '\\' 
-                || ch == 'r' || ch == 'b' || ch == 'f'|| ch == 'a'|| ch == 'v') {
-        Token token("CHARACTER", std::string(1, ch), lineCount);
-        tokenList.push_back(token);
-    } else {  // Handle invalid escape sequences.
-        state9(std::to_string(ch), "Error: Invalid escape sequence '\\", "");
+    std::string handledStr = "";  // Handles escape sequences as strings in the case they're more than one char
+    
+    // Handle the escape sequence directly
+    if (escapeChar == 'n') {
+        handledStr  = "n";  // New line
+    } else if (escapeChar == 't') {
+        handledStr  = "t";  // Tab
+    } else if (escapeChar == 'r') {
+        handledStr  = "r";  // Carriage return
+    } else if (escapeChar == 'b') {
+        handledStr  = "b";  // Backspace
+    } else if (escapeChar == '\'') {
+        handledStr  = "'";  // Single quote
+    } else if (escapeChar == '\"') {
+        handledStr  = "\"";  // Double quote
+    } else if (escapeChar == '0') {
+        handledStr  = '\0';   // Null character
+    } else if (escapeChar == 'x') {  // Handling hexadecimal escape sequence
+        std::string hexStr;
+        char hexChar;
+
+        // Getting up to two hex digits
+        for (int i = 0; i < 2; ++i) {
+            if (inputStream.get(hexChar)) {
+                if (isxdigit(hexChar)) {
+                    hexStr += hexChar;
+                } else {
+                    inputStream.putback(hexChar);
+                    break; //there would be an incomplete hex digit error here, but program accepts '\x0'
+                } 
+            } else {
+                break;
+            }
+        }
+        // Convert hexStr to an integer and then to a char if hexStr is valid
+        if (!hexStr.empty()) {
+            handledStr = "x" + hexStr;  // Cast the integer to char
+        } else {
+            // Handle the case where no valid hex digits were found
+            state9(std::to_string(lineCount), "Error: Incomplete hex escape sequence", "");
+            return;
+        }
+    } 
+    else {
+        // Unrecognized escape sequence, handle error
+        state9(std::to_string(lineCount), "Error: Unrecognized escape sequence: \\" + std::string(1, escapeChar), "");
+        return;
     }
-    return; 
+    // Append the resolved escape sequence to strLiteral
+    strLiteral += "\\" + handledStr;  // Appends the backslash before the escape sequence for output 
 }
 
 // Dead State
@@ -276,20 +337,6 @@ void Tokenizer::state10(std::istringstream &inputStream, int &lineCount) {
         inputStream.putback(ch);  // Put character back if not another '&'.
         Token token("AMPERSAND", std::string(1, ch), lineCount);
         tokenList.push_back(token);
-    }
-}
-
-// Check for the closing single quote for character literals.
-void Tokenizer::state11(std::istringstream &inputStream, int &lineCount) {
-    char ch;
-    inputStream.get(ch);  // Get the next character.
-
-    if (ch == '\'') {  // Handle closing single quote.
-        Token token("SINGLE_QUOTE", std::string(1, ch), lineCount);
-        tokenList.push_back(token);
-        return;
-    } else {  // Handle invalid character literals.
-        state9(std::to_string(lineCount), "Error: Invalid character literal on line ", "");
     }
 }
 
