@@ -53,7 +53,7 @@ void Parser::state2(Token* lastToken){
   state1(token);
 }
 
-void Parser::printTree(){
+void Parser::printTree(std::ofstream &rdpOutput){
     // Pointer for root of tree and counters for width/height
   Token *temp = head;
   int colCount = 0;
@@ -63,29 +63,29 @@ void Parser::printTree(){
 
       // Grab the first token value and print it
           std::string tokenName = temp->getValue();
-          std::cout << tokenName;
+          rdpOutput << tokenName;
       colCount+=tokenName.size(); // Adjust column width
 
           // Check if there is a sibling
           if ( temp->getSibling() != nullptr) {
-              std::cout << "--->";
+              rdpOutput << "--->";
               colCount += 4; // Adjust column width
               temp = temp->getSibling();
           } else if ( temp->getChild() != nullptr) { // Check if there is a child
-              std::cout << '\n';
+              rdpOutput << '\n';
                   for (int j = 1; j < colCount; j++) {
                       // Loop that prints spaces for our width
-                      std::cout << " ";
+                      rdpOutput << " ";
                   }
-              std::cout << "|\n";
+              rdpOutput << "|\n";
               for (int k = 1; k < colCount; k++) {
                   // Loop that prints spaces for our width
-                  std::cout << " ";
+                  rdpOutput << " ";
               }
-              std::cout << "⌄\n";
+              rdpOutput << "⌄\n";
               for (int i = 0; i < colCount; i++) {
                   // Loop that prints spaces for our width
-                  std::cout << " ";
+                  rdpOutput << " ";
               }
               temp = temp->getChild();
           } else {

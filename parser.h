@@ -63,7 +63,7 @@ public:
 
     // Begin the parsing process.
     void begin(){ state0(); };
-    void printTree();
+    void printTree(std::ofstream&);
 };
 
 #endif // PARSER_H

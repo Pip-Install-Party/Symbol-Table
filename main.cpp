@@ -142,7 +142,12 @@ int main() {
 
         Parser *parser = new Parser(tokenList);
         parser->begin();
-        parser->printTree();
+
+        // Make an output filestream
+        std::ofstream rdpOutput( "test_file_" + std::to_string(filenum + 1) + "_output.txt");
+
+        // Call the print function and pass in the ofstream
+        parser->printTree(rdpOutput);
     }
     else {
         std::cout << "No matching assignments exist for " << assignment_num << ".\n";
