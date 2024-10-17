@@ -37,8 +37,12 @@ void Parser::state1(Token* lastToken){
         lastToken->setChild(token);
             state2(token);
         }
-        lastToken->setSibling(token);
-        state1(token);
+        // Ask Blake about these calls, not sure why we need them
+        // I think it's messing with brackets being children
+        else {
+            lastToken->setSibling(token);
+            state1(token);
+        }
     }
 }
 
@@ -50,25 +54,22 @@ void Parser::state2(Token* lastToken){
 }
 
 void Parser::printTree(){
-    // Pointer for root of tree and counter for width
+    // Pointer for root of tree and counters for width/height
   Token *temp = head;
   int colCount = 0;
 
     // Main loop for printing the nodes
   while (temp != nullptr) {
-      /*
-      for (int i = 0; i < colCount; i++) {
-          // Loop that prints spaces for our width
-          std::cout << " ";
-      }*/
+
+      // Grab the first token value and print it
           std::string tokenName = temp->getValue();
           std::cout << tokenName;
-      colCount+=tokenName.size();
+      colCount+=tokenName.size(); // Adjust column width
 
           // Check if there is a sibling
           if ( temp->getSibling() != nullptr) {
               std::cout << "--->";
-              colCount += 4;
+              colCount += 4; // Adjust column width
               temp = temp->getSibling();
           } else if ( temp->getChild() != nullptr) { // Check if there is a child
               std::cout << '\n';
@@ -82,6 +83,10 @@ void Parser::printTree(){
                   std::cout << " ";
               }
               std::cout << "⌄\n";
+              for (int i = 0; i < colCount; i++) {
+                  // Loop that prints spaces for our width
+                  std::cout << " ";
+              }
               temp = temp->getChild();
           } else {
               return;
