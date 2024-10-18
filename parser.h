@@ -61,7 +61,7 @@ private:
     void state0();
     void state1(Token *lastToken);
     void state2(Token *lastToken);
-    
+    void state3(Token *lastToken);
 
 public:
     // Parser construtor that is passed a vector of tokens from tokenizer.
