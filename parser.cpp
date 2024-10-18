@@ -52,8 +52,19 @@ void Parser::state1(Token* lastToken) {
         } else if (lastToken->getType() == L_BRACKET) {
             state3(token);
             lastToken->setSibling(token);
-        }
-        lastToken->setSibling(token);    
+        } else if (token->getType() == IDENTIFIER){
+            if (contains(lastToken->getValue())) {
+                std::cout << lastToken->getValue();
+                if (lastToken->getValue() == "procedure"){
+                    state5(token);
+                } else {
+                    state4(token);
+                }
+            }
+            lastToken->setSibling(token);
+        } else {
+            lastToken->setSibling(token);   
+        } 
         state1(token);
         
     }
@@ -94,12 +105,30 @@ void Parser::state3(Token* token){
         }
     } else if (std::stoi(token->getValue()) < 0) {
         std::cerr << "Error on line " << token->getLineNumber() << ". negative value in square braces.";
+        exit(1);
     }
     return;
 }
 
+void Parser::state4(Token* token){
+        if (contains(token->getValue())) {
+            std::cerr << "Syntax error on line " << token->getLineNumber() << 
+                ": reserved word \"" << token->getValue()  << "\" cannot be used for the name of a variable.";
+            exit(1);
+        }
+    
+}
+
+void Parser::state5(Token* token){
+        if (token->getValue() != "main" && contains(token->getValue())) {
+            std::cerr << "Syntax error on line " << token->getLineNumber() << 
+                ": reserved word \"" << token->getValue()  << "\" cannot be used for the name of a function.";
+            exit(1);
+        }
+}
+
 bool Parser::contains(std::string token){
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 6; i++) {
         if (token == reserved.at(i)){
             return true;
         }
