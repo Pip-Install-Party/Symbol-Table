@@ -1,5 +1,6 @@
 #include <iostream>
 #include "parser.h"
+#include <string>
 using namespace TokenTypes;
 std::string currTokenType;
 
@@ -46,16 +47,14 @@ void Parser::state1(Token* lastToken) {
         } else if (currTokenType == L_BRACE ) {
             lastToken->setChild(token);
             state2(token);
+        } else if (lastToken->getType() == R_BRACE) {
+            lastToken->setChild(token);
+        } else if (lastToken->getType() == L_BRACKET) {
+
         }
-        else {
-            if (lastToken->getType() == R_BRACE) {
-                lastToken->setChild(token);
-            }
-            else {
-                lastToken->setSibling(token);
-            }
-            state1(token);
-        }
+        lastToken->setSibling(token);    
+        state1(token);
+        
     }
 }
 
@@ -76,6 +75,20 @@ void Parser::state2(Token* lastToken){
         this->ignore += 2;
         }
   state1(token); // Go back to state 1
+}
+
+void Parser::state3(Token* lastToken){
+    Token *token = tokenQueue.front();
+    tokenQueue.pop();
+    currTokenType = token->getType();
+
+    if (currTokenType != INTEGER) {
+        std::cerr << "Error on line " << token->getLineNumber() << ". Incompatbile token within square braces.";
+        exit(1);
+    } else if (std::stoi(token->getValue()) < 0) {
+        std::cerr << "Error on line " << token->getLineNumber() << ". negative value in square braces.";
+    }
+    lastToken->setSibling(token);
 }
 
 void Parser::printTree(std::ofstream &rdpOutput){
