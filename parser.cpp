@@ -53,20 +53,15 @@ void Parser::state1(Token* lastToken) {
             state3(token);
             lastToken->setSibling(token);
         } else if (token->getType() == IDENTIFIER){
-            if (contains(lastToken->getValue())) {
-                std::cout << lastToken->getValue();
-                if (lastToken->getValue() == "procedure"){
-                    state5(token);
-                } else {
-                    state4(token);
-                }
-            }
             lastToken->setSibling(token);
+            if (contains(lastToken->getValue())) {
+              lastToken->setSibling(token);  
+              state4(lastToken, token);
+            } 
         } else {
             lastToken->setSibling(token);   
         } 
         state1(token);
-        
     }
 }
 
@@ -95,40 +90,56 @@ void Parser::state3(Token* token){
         if (token->getType() == IDENTIFIER) {
             if (contains(token->getValue())) {
                 std::cout << currTokenType;
-                std::cerr << "Error on line " << token->getLineNumber() << ". Incompatbile token within square braces.";
+                std::cerr << "Error on line: " << token->getLineNumber() << "incompatbile token within square braces.";
                 exit(1);
             }
         } else {
-             std::cout << currTokenType;
-        std::cerr << "Error on line " << token->getLineNumber() << ". Incompatbile token within square braces.";
+                std::cout << currTokenType;
+        std::cerr << "Error on line :" << token->getLineNumber() << " incompatbile token within square braces.";
         exit(1);
         }
     } else if (std::stoi(token->getValue()) < 0) {
-        std::cerr << "Error on line " << token->getLineNumber() << ". negative value in square braces.";
+        std::cerr << "Error on line :" << token->getLineNumber() << " array declaration size must be a positive integer.";
         exit(1);
     }
     return;
 }
 
-void Parser::state4(Token* token){
+void Parser::state4(Token* lastToken, Token* token){
+        std::cout << "Called for " << lastToken->getValue() << " and " << token->getValue() << std::endl;
+
+    if (lastToken->getValue() != "procedure" && lastToken->getValue() != "function") {
         if (contains(token->getValue())) {
             std::cerr << "Syntax error on line " << token->getLineNumber() << 
                 ": reserved word \"" << token->getValue()  << "\" cannot be used for the name of a variable.";
             exit(1);
         }
+        lastToken->setSibling(token);
+    } else {
+        lastToken = token;
+        token = tokenQueue.front();
+        lastToken->setSibling(token);
+        if (token->getType() == IDENTIFIER) {
+            tokenQueue.pop();
+            state5(lastToken, token);
+        } else {
+            state1(token);
+        }
+    }
     
 }
 
-void Parser::state5(Token* token){
-        if (token->getValue() != "main" && contains(token->getValue())) {
-            std::cerr << "Syntax error on line " << token->getLineNumber() << 
+void Parser::state5(Token* lastToken, Token* token){
+        if (contains(lastToken->getValue()) && contains(token->getValue())) {
+             std::cerr << "Syntax error on line " << token->getLineNumber() << 
                 ": reserved word \"" << token->getValue()  << "\" cannot be used for the name of a function.";
             exit(1);
         }
+        else lastToken->setSibling(token);
 }
 
 bool Parser::contains(std::string token){
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < reserved.size(); i++) {
         if (token == reserved.at(i)){
             return true;
         }
