@@ -18,4 +18,4 @@ If you have a Windows based machine, you will need to adjust the Makefile to gen
 
 After selecting "Recursive Descent Parser" from the menu and choosing a file, the program will generate an output file with the resutls. 
 
-For example, if choosing ```"Tests/Program3/programming_assignment_3-test_file_3.c```, the output can be found in ```test_file_3_output.txt```.
+For example, if choosing ```Tests/Program3/programming_assignment_3-test_file_3.c```, the output can be found in ```test_file_3_output.txt```.
