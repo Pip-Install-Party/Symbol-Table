@@ -46,6 +46,8 @@ extern std::string tokenType; //= TokenTypes::IDENTIFIER; // or TokenTypes::INTE
 class Parser 
 {
 private:
+    std::vector<std::string> reserved = {"printf", "int", "void", "char", "bool" "string"};
+
     Token *head;
     // Vector holding all of the tokens in order from the tokenizer.
     std::vector<Token> tokenList;
@@ -62,6 +64,8 @@ private:
     void state1(Token *lastToken);
     void state2(Token *lastToken);
     void state3(Token *lastToken);
+    bool contains(std::string token);
+
 
 public:
     // Parser construtor that is passed a vector of tokens from tokenizer.
