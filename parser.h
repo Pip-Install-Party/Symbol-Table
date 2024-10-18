@@ -61,13 +61,13 @@ private:
     std::queue<Token*> tokenQueue;
 
     void state0();
-    void state1(Token *lastToken);
-    void state2(Token *lastToken);
-    void state3(Token *lastToken);
-    void state4(Token *lastToken, Token *Token);
-    void state5(Token *lastToken, Token *Token);
-    void state6(Token *lastToken);
-    bool contains(std::string token);
+    void state1(Token *);
+    void state2(Token *);
+    void state3(Token *);
+    void state4(Token *, Token *);
+    void state5(Token *, Token *);
+    void state6(Token *);
+    bool contains(std::string);
 
 
 public:
