@@ -1,7 +1,5 @@
 # Component 3 - Recursive Descent Parser
 
-This program is not yet functional. 
-
 This program uses a series of deterministic finite state automata (DFAs) to remove comments from input file(s) and tokenize the contents before creating a concrete syntax tree (CST) using a recursive descent parsing technique.
 
 Authored by: [Blake Marshall](https://github.com/officialblake), [Brandon Robinson](https://github.com/brandonuscg), [Holden Ea](https://github.com/holdenkea), [Rolando Yax](https://github.com/Ryax3), and [Jacob Sellers](https://github.com/JacobS999).
