@@ -50,7 +50,7 @@ void Parser::state1(Token* lastToken) {
         } else if (lastToken->getType() == R_BRACE) {
             lastToken->setChild(token);
         } else if (lastToken->getType() == L_BRACKET) {
-
+            state3(token);
         }
         lastToken->setSibling(token);    
         state1(token);
@@ -81,7 +81,7 @@ void Parser::state3(Token* lastToken){
     Token *token = tokenQueue.front();
     tokenQueue.pop();
     currTokenType = token->getType();
-
+    std::cout << "Here:" << token->getValue();
     if (currTokenType != INTEGER) {
         std::cerr << "Error on line " << token->getLineNumber() << ". Incompatbile token within square braces.";
         exit(1);
