@@ -51,6 +51,7 @@ void Parser::state1(Token* lastToken) {
             lastToken->setChild(token);
         } else if (lastToken->getType() == L_BRACKET) {
             state3(token);
+            lastToken->setSibling(token);
         }
         lastToken->setSibling(token);    
         state1(token);
@@ -77,18 +78,33 @@ void Parser::state2(Token* lastToken){
   state1(token); // Go back to state 1
 }
 
-void Parser::state3(Token* lastToken){
-    Token *token = tokenQueue.front();
-    tokenQueue.pop();
-    currTokenType = token->getType();
-    std::cout << "Here:" << token->getValue();
-    if (currTokenType != INTEGER) {
+void Parser::state3(Token* token){
+    
+    if (token->getType() != INTEGER) {
+        if (token->getType() == IDENTIFIER) {
+            if (contains(token->getValue())) {
+                std::cout << currTokenType;
+                std::cerr << "Error on line " << token->getLineNumber() << ". Incompatbile token within square braces.";
+                exit(1);
+            }
+        } else {
+             std::cout << currTokenType;
         std::cerr << "Error on line " << token->getLineNumber() << ". Incompatbile token within square braces.";
         exit(1);
+        }
     } else if (std::stoi(token->getValue()) < 0) {
         std::cerr << "Error on line " << token->getLineNumber() << ". negative value in square braces.";
     }
-    lastToken->setSibling(token);
+    return;
+}
+
+bool Parser::contains(std::string token){
+    for (int i = 0; i < 5; i++) {
+        if (token == reserved.at(i)){
+            return true;
+        }
+    }
+    return false;
 }
 
 void Parser::printTree(std::ofstream &rdpOutput){
