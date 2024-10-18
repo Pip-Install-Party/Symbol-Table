@@ -106,8 +106,6 @@ void Parser::state3(Token* token){
 }
 
 void Parser::state4(Token* lastToken, Token* token){
-        std::cout << "Called for " << lastToken->getValue() << " and " << token->getValue() << std::endl;
-
     if (lastToken->getValue() != "procedure" && lastToken->getValue() != "function") {
         if (contains(token->getValue())) {
             std::cerr << "Syntax error on line " << token->getLineNumber() << 
@@ -126,7 +124,6 @@ void Parser::state4(Token* lastToken, Token* token){
             state1(token);
         }
     }
-    
 }
 
 void Parser::state5(Token* lastToken, Token* token){
