@@ -1,11 +1,6 @@
 **/.DS_Store
-.vscode
 main.dSYM/
-main
-commentDFA.o
-main.o
-tokenize.x
-tokenization.x
-tokenizer.o
-tokenize.exe
-Makefile
+.vscode
+*.o
+*.x
+*.exe
