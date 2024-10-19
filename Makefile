@@ -1,5 +1,5 @@
-parse.x: main.o commentDFA.o tokenizer.o parser.o
-	g++ -std=c++17 -g main.o commentDFA.o tokenizer.o parser.o -o parse.x
+table.x: main.o commentDFA.o tokenizer.o parser.o table.o
+	g++ -std=c++17 -g main.o commentDFA.o tokenizer.o parser.o table.o -o table.x
 
 main.o: main.cpp commentDFA.h tokenizer.h parser.h
 	g++ -std=c++17 -g main.cpp -o main.o -c
@@ -13,5 +13,8 @@ tokenizer.o: tokenizer.cpp tokenizer.h
 parser.o: parser.cpp parser.h
 	g++ -std=c++17 -g parser.cpp -o parser.o -c
 
+table.o: table.cpp table.h
+	g++ -std=c++17 -g table.cpp -o table.o -c
+
 clean:
-	rm -f parse.x *.o *.txt
+	rm -f table.x *.o *.txt

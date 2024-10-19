@@ -66,7 +66,6 @@ private:
     void state3(Token *);
     void state4(Token *, Token *);
     void state5(Token *, Token *);
-    void state6(Token *);
     bool contains(std::string);
 
 
@@ -76,6 +75,7 @@ public:
 
     // Begin the parsing process.
     void begin(){ state0(); };
+    Token* getHead(){ return head; };
     void printTree(std::ofstream&);
 };
 

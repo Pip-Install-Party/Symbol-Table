@@ -7,6 +7,7 @@
 #include "commentDFA.h"
 #include "tokenizer.h"
 #include "parser.h"
+#include "table.h"
 
 // Vectors holding the file paths for test files
 const std::filesystem::path a1Tests[] = {
@@ -40,6 +41,16 @@ const std::filesystem::path a3Tests[] = {
     "Tests/Program3/programming_assignment_3-test_file_10.c"
 };
 
+const std::filesystem::path a4Tests[] = {
+    "Tests/Program4/programming_assignment_4-test_file_1.c",
+    "Tests/Program4/programming_assignment_4-test_file_2.c",
+    "Tests/Program4/programming_assignment_4-test_file_3.c",
+    "Tests/Program4/programming_assignment_4-test_file_4.c",
+    "Tests/Program4/programming_assignment_4-test_file_5.c",
+    "Tests/Program4/programming_assignment_4-test_file_6.c",
+    "Tests/Program4/programming_assignment_4-test_file_7.c"
+}; 
+
 
 
 
@@ -56,6 +67,7 @@ int main() {
          "(1) Programming Assignment 1: Ignore Comments\n"
          "(2) Programming Assignment 2: Tokenization\n"
          "(3) Programming Assignment 3: Recursive Descent Parser\n"
+         "(4) Programming Assignment 4: Symbol Table\n"
          "Selection: ";
     std::cin >> assignment_num;
 
@@ -72,6 +84,10 @@ int main() {
     } else if (assignment_num == 3) {
          for (int i = 0; i < std::size(a3Tests); i++) {
             std::cout << "(" << i+1 << ")" << a3Tests[i] << std::endl;
+        }
+    } else if (assignment_num == 4) {
+         for (int i = 0; i < std::size(a4Tests); i++) {
+            std::cout << "(" << i+1 << ")" << a4Tests[i] << std::endl;
         }
     }
     std::cout << "Selection: ";
@@ -95,6 +111,12 @@ int main() {
         file.open(a3Tests[filenum]);
         if (!file.is_open()) {  // Check if the file was opened successfully
             std::cerr << "Error: Could not open the file " << a3Tests[filenum] << std::endl;
+            exit(1);
+         }
+    } else if (assignment_num == 4) {
+        file.open(a4Tests[filenum]);
+        if (!file.is_open()) {  // Check if the file was opened successfully
+            std::cerr << "Error: Could not open the file " << a4Tests[filenum] << std::endl;
             exit(1);
          }
     } else {
@@ -148,6 +170,27 @@ int main() {
 
         // Call the print function and pass in the ofstream
         parser->printTree(rdpOutput);
+    } else if(assignment_num == 4) {
+        std::string str = buffer.str();
+        str.erase(str.find_last_not_of(" \n\r\t")+1);  // Remove trailing whitespace or newlines
+        std::istringstream inputStream(str);
+
+        Tokenizer *tokenizer = new Tokenizer();
+
+        tokenizer->begin(inputStream);
+
+        std::vector<Token> tokenList = tokenizer->getTokens();
+
+        Parser *parser = new Parser(tokenList);
+        parser->begin();
+
+        // Make an output filestream
+        std::ofstream rdpOutput( "st_test_file_" + std::to_string(filenum + 1) + "_output.txt");
+
+        Table *table = new Table;
+
+        table->begin(parser->getHead());
+        table->printTable();
     }
     else {
         std::cout << "No matching assignments exist for " << assignment_num << ".\n";

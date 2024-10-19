@@ -1,4 +1,6 @@
 // The Token class defines the attributes of a Token, including its type, contents, and line number.
+#ifndef TOKEN_H
+#define TOKEN_H
 class Token 
 {
 private: 
@@ -33,3 +35,4 @@ public:
 
     Token* getChild(){ return lChild; }
 };
+#endif // TOKEN_H
