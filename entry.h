@@ -25,6 +25,7 @@ class Entry {
     int getArraySize() { return arraySize; }
     short getScope() { return scope; }
     Entry* getNext() { return nextEntry; }
+    void setArray(int size){ isArray = true; arraySize = size; }
 };
 
 

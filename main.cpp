@@ -184,12 +184,10 @@ int main() {
         Parser *parser = new Parser(tokenList);
         parser->begin();
 
-        // Make an output filestream
-        std::ofstream rdpOutput( "st_test_file_" + std::to_string(filenum + 1) + "_output.txt");
-
         Table *table = new Table;
 
         table->begin(parser->getHead());
+        std::cout << "\nPrinting Symbol Table:\n" << std::endl;
         table->printTable();
     }
     else {
