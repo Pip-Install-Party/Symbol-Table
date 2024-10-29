@@ -4,6 +4,7 @@
 #include <iostream>
 #include "token.h"
 #include "entry.h"
+#include <vector>
 
 const std::vector<std::string> reserved = {"printf", "int", "void", "char", "bool", "string", "procedure", "function"};
 
