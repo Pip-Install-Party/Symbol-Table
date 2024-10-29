@@ -39,8 +39,6 @@ void Table::build(Token* token, Token* prevToken, Entry* prevEntry) {
                 if (prevEntry == nullptr ){
                     head = entry;
                 }
-                //handleParameterList(entry, token->getSibling()); // Process parameters for procedure
-                return build(token->getSibling()->getSibling(), token->getSibling(), entry);
             } else {
                 entry = new Entry(token->getSibling()->getValue(), prevToken->getValue(), token->getValue(), false, 0, scope);
                 if (prevEntry == nullptr ){
@@ -48,7 +46,6 @@ void Table::build(Token* token, Token* prevToken, Entry* prevEntry) {
                 } else {
                     prevEntry->setNext(entry);  // Update the next pointer of prevEntry
                 }
-                //handleParameterList(entry, token->getSibling()); // Process parameters for the function
                 return build(token->getSibling()->getSibling(), token->getSibling(), entry );
             }
         } else {
@@ -74,6 +71,14 @@ void Table::build(Token* token, Token* prevToken, Entry* prevEntry) {
         if ( prevEntry != nullptr ) {
         prevEntry->setNext(entry);  // Update the next pointer of prevEntry
         }
+    }
+    //  Check if it's a function or procedure again and handle parameters
+    else if (pause == true) {
+        //token = handleParameterList(entry, token); // Process parameters for procedure
+            if (contains(prevToken->getValue()) && token->getType() == "IDENTIFIER"){
+                Entry *newEntry = new Entry(token->getValue(), "parameter", prevToken->getValue(), false, 0, scope);
+                prevEntry->parameters.push_back(newEntry);
+            }
     }
 
     // Recursively traverse siblings or children
@@ -112,65 +117,78 @@ void Table::handleInitList(std::string type, Token* token, Entry* prevEntry){
 }
 
 // Takes care of the parameters of a function
-void Table::handleParameterList(Entry* parent, Token* startToken) {
-    Token* current = startToken;
-
-    // Ensure the starting token is a left parenthesis
-    if (current->getType() != "L_PAREN") {
-        std::cerr << "Error: Expected '(' but found " << current->getType() << std::endl;
-        exit(1);
-    }
-    current = current->getSibling(); // Move to first parameter or ')' if no parameters
-
-    // Loop to process each parameter until we reach ')'
-    while (current != nullptr && current->getType() != "R_PAREN") {
-        if (current->getType() == "IDENTIFIER") {
-            // Create a new Entry for the parameter and set details (assuming default datatype for now)
-            Entry* paramEntry = new Entry(current->getValue(), "parameter", "defaultType", false, 0, parent->getScope());
-            parent->parameters.push_back(paramEntry); // Add parameter Entry to the parent Entry's parameters
-        } else if (current->getType() != "COMMA") {
-            std::cerr << "Error: Unexpected token in parameter list: " << current->getType() << std::endl;
-            exit(1);
-        }
-        current = current->getSibling(); // Move to next token
-    }
-
-    // Check for closing parenthesis
-    if (current == nullptr || current->getType() != "R_PAREN") {
-        std::cerr << "Error: Expected ')' but not found in parameter list." << std::endl;
-        exit(1);
-    }
-}
+// Token *Table::handleParameterList(Entry *parent, Token *startToken) {
+//     Token* current = startToken;
+//
+//     // Check if our parent entry is main
+//     if (parent->getIDName() == "main") {return startToken;}
+//
+//     std::cout << current->getValue() << std::endl;
+//
+//     // Ensure the starting token is a left parenthesis
+//     if (current->getType() != "L_PAREN") {
+//         std::cerr << "Error: Expected '(' but found " << current->getType() << std::endl;
+//         exit(1);
+//     }
+//     current = current->getSibling(); // Move to first parameter or ')' if no parameters
+//
+//     // Loop to process each parameter until we reach ')'
+//     while (current != nullptr && current->getType() != "R_PAREN") {
+//         if (current->getType() == "IDENTIFIER") {
+//             // Create a new Entry for the parameter and set details
+//             Entry* paramEntry = new Entry(current->getSibling()->getValue(), "parameter", current->getValue(), false, 0, parent->getScope());
+//             parent->parameters.push_back(paramEntry); // Add parameter Entry to the parent Entry's parameters
+//         } else if (current->getType() != "COMMA") {
+//             std::cerr << "Error: Unexpected token in parameter list: " << current->getType() << std::endl;
+//             exit(1);
+//         }
+//         current = current->getSibling()->getSibling(); // Move to next token
+//     }
+//
+//     // Check for closing parenthesis
+//     if (current == nullptr || current->getType() != "R_PAREN") {
+//         std::cerr << "Error: Expected ')' but not found in parameter list." << std::endl;
+//         exit(1);
+//     }
+//     return current;
+// }
 
 void Table::printTable(){
-    while(head != nullptr) {
-        std::cout << "IDENTIFIER_NAME: " << head->getIDName() << std::endl;
-        std::cout << "IDENTIFIER_TYPE: " << head->getIDType() << std::endl;
-        std::cout << "DATATYPE: " << head->getDType() << std::endl;
+
+    //make temp head pointer
+    Entry* tempHead = this->head;
+
+    while(tempHead != nullptr) {
+        std::cout << "IDENTIFIER_NAME: " << tempHead->getIDName() << std::endl;
+        std::cout << "IDENTIFIER_TYPE: " << tempHead->getIDType() << std::endl;
+        std::cout << "DATATYPE: " << tempHead->getDType() << std::endl;
         std::cout << "DATATYPE_IS_ARRAY: ";
-        head->getIsArray() ?  std::cout << "yes" :  std::cout << "no";
-        std::cout << "\nDATATYPE_ARRAY_SIZE: " << head->getArraySize() << std::endl;
-        std::cout << "SCOPE: " << head->getScope() << std::endl << std::endl;
-        head = head->getNext();
+        tempHead->getIsArray() ?  std::cout << "yes" :  std::cout << "no";
+        std::cout << "\nDATATYPE_ARRAY_SIZE: " << tempHead->getArraySize() << std::endl;
+        std::cout << "SCOPE: " << tempHead->getScope() << std::endl << std::endl;
+        tempHead = tempHead->getNext();
     }
 }
 
 // Print function for any Entries that have parameters
 void Table::printParameters(){
 
+    // make local head pointer
+    Entry* tempHead = this->head;
+
     // Cycle through all entries in the table
-    while(head != nullptr) {
-        if (head->parameters.size() > 0) {  // If current entry has parameters...
-            std::cout << "PARAMETER LIST FOR: " << head->getIDName() << std::endl;
-            for (int i = 0; i < head->parameters.size(); i++) { // Print each parameter
-                std::cout << "IDENTIFIER_NAME: " << head->getIDName() << std::endl;
-                std::cout << "DATATYPE: " << head->getDType() << std::endl;
+    while(tempHead != nullptr) {
+        if (tempHead->parameters.size() > 0) {  // If current entry has parameters...
+            std::cout << "PARAMETER LIST FOR: " << tempHead->getIDName() << std::endl;
+            for (int i = 0; i < tempHead->parameters.size(); i++) { // Print each parameter
+                std::cout << "IDENTIFIER_NAME: " << tempHead->parameters.at(i)->getIDName() << std::endl;
+                std::cout << "DATATYPE: " << tempHead->parameters.at(i)->getDType() << std::endl;
                 std::cout << "DATATYPE_IS_ARRAY: ";
-                head->getIsArray() ? std::cout << "yes" : std::cout << "no";
-                std::cout << "\nDATATYPE_ARRAY_SIZE: " << head->getArraySize() << std::endl;
-                std::cout << "SCOPE: " << head->getScope() << std::endl << std::endl;
+                tempHead->parameters.at(i)->getIsArray() ? std::cout << "yes" : std::cout << "no";
+                std::cout << "\nDATATYPE_ARRAY_SIZE: " << tempHead->parameters.at(i)->getArraySize() << std::endl;
+                std::cout << "SCOPE: " << tempHead->parameters.at(i)->getScope() << std::endl << std::endl;
             }
         }
-        head = head->getNext();
+        tempHead = tempHead->getNext();
     }
 }
