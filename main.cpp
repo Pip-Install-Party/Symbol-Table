@@ -83,6 +83,7 @@ void symbolTable(std::ifstream& testFile, std::ostringstream& outputFile, int) {
     table->begin(parser->getHead());
     std::cout << "\nPrinting Symbol Table:\n" << std::endl;
     table->printTable();
+    table->printParameters();
 }
 
 const assignmentElements assignments[] = {

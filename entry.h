@@ -2,6 +2,7 @@
 #define ENTRY_H
 
 #include <string>
+#include <vector>
 
 class Entry {
     private:
@@ -26,7 +27,7 @@ class Entry {
     short getScope() { return scope; }
     Entry* getNext() { return nextEntry; }
     void setArray(int size){ isArray = true; arraySize = size; }
+    std::vector<Entry*> parameters;
 };
-
 
 #endif // ENTRY_H
