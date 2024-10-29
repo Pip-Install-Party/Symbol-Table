@@ -17,10 +17,12 @@ class Table {
     void build(Token*, Token*, Entry*);
     void setArray(Token*, Entry*);
     void handleInitList(std::string, Token*, Entry*);
+    void handleParameterList(Entry*, Token*);
     public:
     Table(){};
     void begin(Token*);
     void printTable();
+    void printParameters();
     ~Table(){};
 };
 
