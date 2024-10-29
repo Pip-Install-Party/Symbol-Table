@@ -108,10 +108,11 @@ std::ifstream openSelectedFile(const assignmentElements& config, int fileNum) {
 int main() {
     int assignmentNum;
     std::cout << "Select the assignment:\n"
-              << "(1) Remove Comments\n"
-              << "(2) Tokenize\n"
-              << "(3) Parse\n"
-              << "(4) Symbol Table\n";
+              << "1 - Remove Comments\n"
+              << "2 - Tokenize\n"
+              << "3 - Parse\n"
+              << "4 - Symbol Table\n"
+              << "Selection: ";
     std::cin >> assignmentNum;
 
     if (assignmentNum < 1 || assignmentNum > 4) {
