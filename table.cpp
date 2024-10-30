@@ -74,9 +74,15 @@ void Table::build(Token* token, Token* prevToken, Entry* prevEntry) {
     }
     //  Check if it's a function or procedure again and handle parameters
     else if (pause == true) {
-        //token = handleParameterList(entry, token); // Process parameters for procedure
+        // Process parameters for procedure
             if (contains(prevToken->getValue()) && token->getType() == "IDENTIFIER"){
                 Entry *newEntry = new Entry(token->getValue(), "parameter", prevToken->getValue(), false, 0, scope);
+                // Process for array parameters
+                if (token->getSibling()->getValue() == "[") {
+                    token = token->getSibling()->getSibling();
+                    newEntry->setIsArray();
+                    newEntry->setArray(stoi(token->getValue()));
+                }
                 prevEntry->parameters.push_back(newEntry);
             }
     }
