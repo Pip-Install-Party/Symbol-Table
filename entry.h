@@ -6,14 +6,14 @@
 
 class Entry {
     private:
-    std::string idName;
-    std::string idType;
-    std::string dType;
-    bool isArray;
-    int arraySize;
+    std::string idName = "";
+    std::string idType = "";
+    std::string dType = "";
+    bool isArray = false;
+    int arraySize = 0;
     short scope;
 
-    Entry* nextEntry; 
+    Entry* nextEntry = nullptr;
     public:
     Entry(std::string idName, std::string idType, std::string dType, bool isArray, int arraySize, short scope)
         : idName(idName), idType(idType), dType(dType), isArray(isArray), arraySize(arraySize), scope(scope){}; 
@@ -22,6 +22,7 @@ class Entry {
     std::string getIDName(){ return idName; }
     std::string getIDType(){ return idType; }
     std::string getDType() { return dType; }
+    void setIsArray() { this->isArray = true; };
     bool getIsArray() { return isArray; }
     int getArraySize() { return arraySize; }
     short getScope() { return scope; }
