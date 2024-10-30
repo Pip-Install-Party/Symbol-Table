@@ -14,6 +14,7 @@ class Table {
     bool pause = false;
     short scope = 0;
     bool contains(std::string);
+    void exists(Token*, int);
     void build(Token*, Token*, Entry*);
     void setArray(Token*, Entry*);
     void handleInitList(std::string, Token*, Entry*);

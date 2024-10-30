@@ -35,11 +35,13 @@ void Table::build(Token* token, Token* prevToken, Entry* prevEntry) {
         if (prevToken->getValue() == "procedure" || prevToken->getValue() == "function") {
             scope++;
             if (prevToken->getValue() == "procedure") {
+                exists(token, scope);
                 entry = new Entry(token->getValue(), prevToken->getValue(), "NOT APPLICABLE", false, 0, scope);
                 if (prevEntry == nullptr ){
                     head = entry;
                 }
             } else {
+                exists(token, scope);
                 entry = new Entry(token->getSibling()->getValue(), prevToken->getValue(), token->getValue(), false, 0, scope);
                 if (prevEntry == nullptr ){
                     head = entry;
@@ -49,6 +51,7 @@ void Table::build(Token* token, Token* prevToken, Entry* prevEntry) {
                 return build(token->getSibling()->getSibling(), token->getSibling(), entry );
             }
         } else {
+            exists(token, scope);
             entry = new Entry(token->getValue(), "datatype", prevToken->getValue(), false, 0, scope);
              if (prevEntry == nullptr ){
                 head = entry;
@@ -76,6 +79,7 @@ void Table::build(Token* token, Token* prevToken, Entry* prevEntry) {
     else if (pause == true) {
         // Process parameters for procedure
             if (contains(prevToken->getValue()) && token->getType() == "IDENTIFIER"){
+                exists(token, scope);
                 Entry *newEntry = new Entry(token->getValue(), "parameter", prevToken->getValue(), false, 0, scope);
                 // Process for array parameters
                 if (token->getSibling()->getValue() == "[") {
@@ -104,6 +108,36 @@ bool Table::contains(std::string token){
         }
     }
     return false;
+}
+
+// Checks if the token exists in the symbol table
+void Table::exists(Token* token, int scope){
+    auto temp = head;
+    while(temp != nullptr) {
+        if (temp->getIDName() == token->getValue() && !contains(token->getValue()) ){
+            if (temp->getScope() == 0) {
+                std::cerr << "Error on line: " << token->getLineNumber() << " variable \"" << token->getValue() << "\" already defined globally";
+                exit(1);
+            }
+            if (temp->getScope() == scope) {
+                std::cerr << "Error on line: " << token->getLineNumber() << " variable \"" << token->getValue() << "\" already defined locally";
+                exit(1);
+            }
+        }
+        for (int i = 0; i < temp->parameters.size(); i++) {
+            if (temp->parameters.at(i)->getIDName() == token->getValue() && !contains(token->getValue()) ){
+                if (temp->parameters.at(i)->getScope() == 0) {
+                    std::cerr << "Error on line: " << token->getLineNumber() << " variable \"" << token->getValue() << "\" already defined globally";
+                    exit(1);
+                }
+                  if (temp->parameters.at(i)->getScope() == scope) {
+                    std::cerr << "Error on line: " << token->getLineNumber() << " variable \"" << token->getValue() << "\" already defined locally";
+                    exit(1);
+                }
+            }
+        }
+        temp = temp->getNext();
+    }
 }
 
 
