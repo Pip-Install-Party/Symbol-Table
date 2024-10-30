@@ -116,22 +116,22 @@ void Table::exists(Token* token, int scope){
     while(temp != nullptr) {
         if (temp->getIDName() == token->getValue() && !contains(token->getValue()) ){
             if (temp->getScope() == 0) {
-                std::cerr << "Error on line: " << token->getLineNumber() << " variable \"" << token->getValue() << "\" already defined globally";
+                std::cerr << "Error on line: " << token->getLineNumber() << " variable \"" << token->getValue() << "\" already defined globally\n";
                 exit(1);
             }
             if (temp->getScope() == scope) {
-                std::cerr << "Error on line: " << token->getLineNumber() << " variable \"" << token->getValue() << "\" already defined locally";
+                std::cerr << "Error on line: " << token->getLineNumber() << " variable \"" << token->getValue() << "\" already defined locally\n";
                 exit(1);
             }
         }
         for (int i = 0; i < temp->parameters.size(); i++) {
             if (temp->parameters.at(i)->getIDName() == token->getValue() && !contains(token->getValue()) ){
                 if (temp->parameters.at(i)->getScope() == 0) {
-                    std::cerr << "Error on line: " << token->getLineNumber() << " variable \"" << token->getValue() << "\" already defined globally";
+                    std::cerr << "Error on line: " << token->getLineNumber() << " variable \"" << token->getValue() << "\" already defined globally\n";
                     exit(1);
                 }
                   if (temp->parameters.at(i)->getScope() == scope) {
-                    std::cerr << "Error on line: " << token->getLineNumber() << " variable \"" << token->getValue() << "\" already defined locally";
+                    std::cerr << "Error on line: " << token->getLineNumber() << " variable \"" << token->getValue() << "\" already defined locally\n";
                     exit(1);
                 }
             }
@@ -155,43 +155,6 @@ void Table::handleInitList(std::string type, Token* token, Entry* prevEntry){
     }
     return handleInitList(type, token->getSibling()->getSibling(), entry);
 }
-
-// Takes care of the parameters of a function
-// Token *Table::handleParameterList(Entry *parent, Token *startToken) {
-//     Token* current = startToken;
-//
-//     // Check if our parent entry is main
-//     if (parent->getIDName() == "main") {return startToken;}
-//
-//     std::cout << current->getValue() << std::endl;
-//
-//     // Ensure the starting token is a left parenthesis
-//     if (current->getType() != "L_PAREN") {
-//         std::cerr << "Error: Expected '(' but found " << current->getType() << std::endl;
-//         exit(1);
-//     }
-//     current = current->getSibling(); // Move to first parameter or ')' if no parameters
-//
-//     // Loop to process each parameter until we reach ')'
-//     while (current != nullptr && current->getType() != "R_PAREN") {
-//         if (current->getType() == "IDENTIFIER") {
-//             // Create a new Entry for the parameter and set details
-//             Entry* paramEntry = new Entry(current->getSibling()->getValue(), "parameter", current->getValue(), false, 0, parent->getScope());
-//             parent->parameters.push_back(paramEntry); // Add parameter Entry to the parent Entry's parameters
-//         } else if (current->getType() != "COMMA") {
-//             std::cerr << "Error: Unexpected token in parameter list: " << current->getType() << std::endl;
-//             exit(1);
-//         }
-//         current = current->getSibling()->getSibling(); // Move to next token
-//     }
-//
-//     // Check for closing parenthesis
-//     if (current == nullptr || current->getType() != "R_PAREN") {
-//         std::cerr << "Error: Expected ')' but not found in parameter list." << std::endl;
-//         exit(1);
-//     }
-//     return current;
-// }
 
 void Table::printTable(){
 
