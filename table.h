@@ -10,7 +10,7 @@ const std::vector<std::string> reserved = {"printf", "int", "void", "char", "boo
 
 class Table {
     private:
-    Entry* head;
+    Entry* head = nullptr;
     bool pause = false;
     short scope = 0;
     bool contains(std::string);
