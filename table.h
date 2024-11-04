@@ -13,6 +13,7 @@ class Table {
     Entry* head = nullptr;
     bool pause = false;
     short scope = 0;
+    bool inProcOrFuncScope = false;
     bool contains(std::string);
     void exists(Token*, int);
     void build(Token*, Token*, Entry*);
