@@ -18,6 +18,113 @@ struct assignmentElements {
     void (*processFunction)(std::ifstream&, std::ostringstream&, int);
 };
 
+void processAssignment(std::ifstream& testFile, std::ostringstream& outputFile, int assignmentLevel, int fileNum) {
+    CommentDFA commentDFA;
+    commentDFA.begin(testFile, outputFile);  // Step 1: Remove comments
+    
+    if (assignmentLevel >= 2) {
+        std::ostringstream tempBuffer;
+        tempBuffer << outputFile.str();
+        outputFile.str("");  // Clear for subsequent output
+
+        Tokenizer tokenizer;
+        std::istringstream tokenStream(tempBuffer.str());
+        tokenizer.begin(tokenStream);  // Step 2: Tokenize
+
+        std::vector<Token> tokenList = tokenizer.getTokens();
+
+        if (assignmentLevel == 2) {  // Print tokens for assignment 2
+            std::cout << "Token List\n";
+            for (const auto& token : tokenList) {
+                std::cout << "Token type: " << token.getType() << '\n'
+                          << "Token: " << token.getValue() << "\nLine Number: " << token.getLineNumber() << '\n';
+            }
+            return;
+        }
+
+        if (assignmentLevel >= 3) {
+            Parser parser(tokenList);
+            parser.begin();  // Step 3: Create CST
+
+            if (assignmentLevel == 3) {
+                std::string outputFilename = "test_file_" + std::to_string(fileNum + 1) + "_CST_output.txt";
+                std::ofstream rdpOutput(outputFilename);
+                parser.printTree(rdpOutput);  // Output CST for assignment 3
+                return;
+            }
+
+            if (assignmentLevel == 4) {
+                Table table;
+                table.begin(parser.getHead());  // Step 4: Generate symbol tables
+                std::cout << "\nPrinting Symbol Table:\n";
+                table.printTable();
+                table.printParameters();
+            }
+        }
+    }
+}
+
+
+const assignmentElements assignments[] = {
+    {1, a1Tests, std::size(a1Tests), [](std::ifstream& f, std::ostringstream& o, int i){ processAssignment(f, o, 1, i); }},
+    {2, a2Tests, std::size(a2Tests), [](std::ifstream& f, std::ostringstream& o, int i){ processAssignment(f, o, 2, i); }},
+    {3, a3Tests, std::size(a3Tests), [](std::ifstream& f, std::ostringstream& o, int i){ processAssignment(f, o, 3, i); }},
+    {4, a4Tests, std::size(a4Tests), [](std::ifstream& f, std::ostringstream& o, int i){ processAssignment(f, o, 4, i); }}
+};
+
+
+// Function to open the chosen file and validate it
+std::ifstream openSelectedFile(const assignmentElements& config, int fileNum) {
+    std::ifstream file(config.testFiles[fileNum]);
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open file " << config.testFiles[fileNum] << std::endl;
+        exit(1);
+    }
+    return file;
+}
+
+// Main function to handle user selection and process the file based on the assignment
+int main() {
+    int assignmentNum;
+    std::cout << "Select the assignment:\n"
+              << "1 - Remove Comments\n"
+              << "2 - Tokenize\n"
+              << "3 - Parse\n"
+              << "4 - Symbol Table\n"
+              << "Selection: ";
+    std::cin >> assignmentNum;
+
+    if (assignmentNum < 1 || assignmentNum > 4) {
+        std::cerr << "Invalid assignment choice. Exiting.\n";
+        return 1;
+    }
+
+    const assignmentElements& config = assignments[assignmentNum - 1];
+    
+    int fileNum;
+    std::cout << "Choose a test file:\n";
+    for (int i = 0; i < config.numFiles; ++i) {
+        std::cout << "(" << i + 1 << ") " << config.testFiles[i] << "\n";
+    }
+    std::cin >> fileNum;
+    --fileNum;
+
+    std::ifstream file = openSelectedFile(config, fileNum);
+    std::ostringstream buffer;
+
+    config.processFunction(file, buffer, fileNum);  // Call the appropriate function
+
+    std::cout << buffer.str();
+    return 0;  
+}
+
+/*struct assignmentElements {
+    int assignmentNum;
+    const std::filesystem::path* testFiles;
+    int numFiles;
+    void (*processFunction)(std::ifstream&, std::ostringstream&, int);
+};
+
 // function to remove comments
 void removeComments(std::ifstream& testFile, std::ostringstream& outputFile, int) {
     CommentDFA *removeComments = new CommentDFA();
@@ -140,7 +247,7 @@ int main() {
     std::cout << buffer.str();
     return 0;  
 }
-
+*/
 
 
 
